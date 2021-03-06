@@ -8,3 +8,11 @@ class TodoList(models.Model):
 
     class Meta:
         db_table = "todo_list"
+
+def fun_raw_sql_query(**kwargs):
+    title = kwargs.get('title')
+    if title:
+        result = TodoList.objects.raw('SELECT * FROM todo_list WHERE title = %s', [title])
+    else:
+        result = TodoList.objects.raw('SELECT * FROM todo_list')
+    return result

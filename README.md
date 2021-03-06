@@ -124,3 +124,90 @@ makemigrations ： 會幚你建立一個檔案，去記錄你更新了哪些東�
 migrate ： 根據 makemigrations 建立的檔案，去更新你的 DATABASE 。
 
 建立完成後可以使用SQLiteBrowser觀看DB，會發現多了一個todo_list的table
+
+### Serializers 序列化
+
+```python
+from rest_framework import serializers
+from .models import TodoList
+
+
+class TodoListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodoList
+        fields = '__all__'
+        # fields = ('id', 'title', 'description', 'created')
+
+```
+
+### Views
+
+```python
+from django.shortcuts import render
+
+# Create your views here.
+from .models import TodoList
+from .serializers import TodoListSerializer
+
+from rest_framework import viewsets
+
+
+# Create your views here.
+class TodoListViewSet(viewsets.ModelViewSet):
+    queryset = TodoList.objects.all()
+    serializer_class = TodoListSerializer
+
+```
+
+### Routers 路由
+```python
+from django.shortcuts import render
+
+# Create your views here.
+from .models import TodoList
+from .serializers import TodoListSerializer
+
+from rest_framework import viewsets
+
+
+# Create your views here.
+class TodoListViewSet(viewsets.ModelViewSet):
+    queryset = TodoList.objects.all()
+    serializer_class = TodoListSerializer
+
+```
+
+最後執行 Django ， 然後瀏覽 http://127.0.0.1:8000/api/
+
+### Performing raw SQL queries
+
+```python
+def fun_raw_sql_query(**kwargs):
+    title = kwargs.get('title')
+    if title:
+        result = TodoList.objects.raw('SELECT * FROM todo_list WHERE title = %s', [title])
+    else:
+        result = TodoList.objects.raw('SELECT * FROM todo_list')
+    return result
+
+```
+
+
+### Executing custom SQL directly
+
+```python
+# Create your views here.
+class TodoListViewSet(viewsets.ModelViewSet):
+    queryset = TodoList.objects.all()
+    serializer_class = TodoListSerializer
+
+    # 新增部分
+    # /api/music/raw_sql_query/
+    @action(methods=['get'], detail=False)
+    def raw_sql_query(self, request):
+        title = request.query_params.get('title', None)
+        todo_list = fun_raw_sql_query(title=title)
+        serializer = TodoListSerializer(todo_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+```
