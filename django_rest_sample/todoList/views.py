@@ -17,6 +17,7 @@ from rest_framework.decorators import action
 class TodoListViewSet(viewsets.ModelViewSet):
     queryset = TodoList.objects.all()
     serializer_class = TodoListSerializer
+    permission_classes = (IsAuthenticated,)
 
     # /api/music/raw_sql_query/
     @action(methods=['get'], detail=False)

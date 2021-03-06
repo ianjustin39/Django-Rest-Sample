@@ -193,7 +193,6 @@ def fun_raw_sql_query(**kwargs):
 ```
 
 
-### Executing custom SQL directly
 
 ```python
 # Create your views here.
@@ -211,3 +210,13 @@ class TodoListViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 ```
+
+
+### Executing custom SQL directly
+
+
+### 授權 (Authentications)
+
+DRF 有提供 Authentications。
+
+首先，請在 views.py 裡面新增 permission_classes
